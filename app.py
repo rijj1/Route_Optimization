@@ -14,7 +14,7 @@ app = Flask(__name__)
 import json
 
 # Replace 'YOUR_API_KEY' with your actual Google Maps API key
-gmaps = googlemaps.Client(key='AIzaSyAkrFYkxmtHZHod1Xd2b7OkGFsnto59oyQ')
+gmaps = googlemaps.Client(key='YOUR_API_KEY')
 
 @app.route('/')
 def index():
