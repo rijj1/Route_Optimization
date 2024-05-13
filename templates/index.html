@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Map Selector</title>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Select Points on Map</h1>
+    <div id="map"></div>
+    <button id="submitBtn">Submit</button>
+    <a href="/result">
+        <button>Go to Result Page</button>
+    </a>
+    <script>
+        var map;
+        var selectedPoints = [];
+        var markers = [];
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 26.1712329, lng: 92.6713551 },
+                zoom: 12
+            });
+
+            map.addListener('click', function(event) {
+                addMarker(event.latLng);
+            });
+
+            document.getElementById('submitBtn').addEventListener('click', function() {
+                savePoints(selectedPoints);
+            });
+        }
+
+        function addMarker(location) {
+            var marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                label: String.fromCharCode(65 + markers.length) // Convert ASCII code to character ('A', 'B', 'C', ...)
+            });
+
+            markers.push(marker);
+            selectedPoints.push({ lat: location.lat(), lng: location.lng(), label: marker.label });
+            
+            marker.addListener('click', function() {
+                alert("Marker Label: " + marker.label);
+            });
+        }
+
+        function savePoints(points) {
+            fetch('/save_points', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(points)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                location.reload();
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAkrFYkxmtHZHod1Xd2b7OkGFsnto59oyQ&callback=initMap"></script>
+</body>
+</html>

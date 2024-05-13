@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result Page</title>
+</head>
+<body>
+    <h1>Result Page</h1>
+
+    <!-- Display the graph image -->
+    <img src="{{ img_path }}" alt="Graph">
+
+    <hr>
+
+    <!-- Form to choose start and end nodes -->
+    <h2>Select Start and End Nodes</h2>
+    <form id="nodeForm">
+        <label for="startNode">Start Node:</label>
+        <select id="startNode" name="startNode">
+            {% for node in nodes %}
+            <option value="{{ node }}" {% if node == default_start_node %}selected{% endif %}>{{ node }}</option>
+            {% endfor %}
+        </select>
+        <label for="endNode">End Node:</label>
+        <select id="endNode" name="endNode">
+            {% for node in nodes %}
+            <option value="{{ node }}" {% if node == default_end_node %}selected{% endif %}>{{ node }}</option>
+            {% endfor %}
+        </select>
+        <button type="button" onclick="updatePath()">Update Path</button>
+    </form>
+
+    <hr>
+
+    <!-- Print the shortest path and distance -->
+    <h2>Shortest Path Information</h2>
+    <p>{{ shortest_path_info | safe }}</p>
+
+    <script>
+        function updatePath() {
+            var startNode = document.getElementById('startNode').value;
+            var endNode = document.getElementById('endNode').value;
+            fetch('/update_path', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ startNode: startNode, endNode: endNode })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.querySelector('p').innerHTML = data.shortest_path_info;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
